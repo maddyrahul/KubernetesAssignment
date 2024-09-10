@@ -1,73 +1,182 @@
-<p align="center">
-  <a href="https://your-project-demo-link">
-    <img alt="HelloWorldApp Demo" src="./images/your-demo-image.png" width="60" />
-  </a>
-</p>
-<h1 align="center">
-  HelloWorldApp - .NET Core Web Application
-</h1>
+# HelloWorldApp - .NET Core Web Application
+This project demonstrates how to build, Dockerize, and deploy a simple .NET Core web application to a Kubernetes cluster using Minikube. The application is exposed using a Kubernetes Service and supports scaling and health checks through liveness and readiness probes.
 
-<p align="center">
-<a href="https://github.com/your-repo/hello-world-app/blob/master/LICENSE" target="blank">
-<img src="https://img.shields.io/github/license/your-repo/hello-world-app?style=flat-square" alt="HelloWorldApp license" />
-</a>
-<a href="https://github.com/your-repo/hello-world-app/fork" target="blank">
-<img src="https://img.shields.io/github/forks/your-repo/hello-world-app?style=flat-square" alt="HelloWorldApp forks"/>
-</a>
-<a href="https://github.com/your-repo/hello-world-app/stargazers" target="blank">
-<img src="https://img.shields.io/github/stars/your-repo/hello-world-app?style=flat-square" alt="HelloWorldApp stars"/>
-</a>
-<a href="https://github.com/your-repo/hello-world-app/issues" target="blank">
-<img src="https://img.shields.io/github/issues/your-repo/hello-world-app?style=flat-square" alt="HelloWorldApp issues"/>
-</a>
-<a href="https://github.com/your-repo/hello-world-app/pulls" target="blank">
-<img src="https://img.shields.io/github/issues-pr/your-repo/hello-world-app?style=flat-square" alt="HelloWorldApp pull-requests"/>
-</a>
-</p>
+# Table of Contents
+1. Prerequisites
+2. Project Setup
+3. Dockerize the Application
+4. Setup Kubernetes with Minikube
+5. Deploy to Kubernetes
+6. Accessing the Application
+7. Scaling the Application
+8. Health Checks - Liveness and Readiness Probes
+9. Bonus: Cleanup Resources
+    
+# Prerequisites
+# Before getting started, make sure you have the following installed:
 
-<p align="center"><img src="./images/hello-world-app-demo.gif" alt="HelloWorldApp demo gif" /></p>
+1. .NET Core SDK
+2. Docker
+3. Minikube
+4. kubectl
+5. (Optional) Git for version control
 
-<p align="center">
-    <a href="https://your-project-demo-link" target="blank">View Demo</a>
-    ·
-    <a href="https://github.com/your-repo/hello-world-app/issues/new/choose">Report Bug</a>
-    ·
-    <a href="https://github.com/your-repo/hello-world-app/issues/new/choose">Request Feature</a>
-</p>
+# Project Setup
 
-<p align="center">
-<i>Loved the project? Please consider <a href="https://paypal.me/your-paypal-link/10">donating</a> 💸 to help it improve!</i>
-</p>
+# Create a new .NET Core Web App:
+dotnet new web -o HelloWorldApp
+cd HelloWorldApp
 
-<p align="center">
-<a href="https://www.paypal.me/your-paypal-link"><img src="https://img.shields.io/badge/support-PayPal-blue?logo=PayPal&style=flat-square&label=Donate" alt="support HelloWorldApp"/></a>
-<a href='https://ko-fi.com/your-kofi-link' target='_blank'><img height='23' width="100" src='https://cdn.ko-fi.com/cdn/kofi3.png?v=2' alt='Buy Coffee for project' /></a>
-<a href="https://www.buymeacoffee.com/your-buymeacoffee-link" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="23" width="100" style="border-radius:1px" /></a>
-</p>
+# Run the application locally (optional):
+dotnet run
+The application should now be available at http://localhost:5000.
 
-#### Tired of managing Docker and Kubernetes configurations?
+# Dockerize the Application
+# Create a Dockerfile in the root of your project:
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+WORKDIR /app
+EXPOSE 80
 
-This project provides a straightforward example of Dockerizing a .NET Core web application and deploying it to a Kubernetes cluster using Minikube, with scaling and health checks.
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build<br>
+WORKDIR /src<br>
+COPY . .
+RUN dotnet restore
+RUN dotnet publish -c Release -o /app
 
-## 🚀 Demo
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app .
+ENTRYPOINT ["dotnet", "HelloWorldApp.dll"]
 
-<a href="https://your-project-demo-link" target="blank">
-<img src="https://img.shields.io/website?url=https%3A%2F%2Fyour-project-demo-link&logo=github&style=flat-square" />
-</a>
+# Build the Docker Image:
+docker build -t helloworldapp:1.0 .
+Setup Kubernetes with Minikube
+Start Minikube:
 
-Try the project: [HelloWorldApp Demo](https://your-project-demo-link)
+minikube start
 
-## 🧐 Features
+# Use Minikube's Docker environment:
+eval $(minikube docker-env)
 
-- **Dockerization**: Containerize a .NET Core web application.
-- **Kubernetes Deployment**: Deploy the application to a Kubernetes cluster.
-- **Scaling**: Scale the application with Kubernetes.
-- **Health Checks**: Implement liveness and readiness probes.
+# Build the Docker image inside Minikube:
+docker build -t helloworldapp:1.0 .
 
-## 🛠️ Installation Steps
+# Deploy to Kubernetes
+# Create a Kubernetes Deployment file deployment.yaml:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: helloworldapp:1.0
+        ports:
+        - containerPort: 80
+        
+# Create a Kubernetes Service file service.yaml:
+apiVersion: v1
+kind: Service
+metadata:
+  name: helloworld-service
+spec:
+  type: NodePort
+  selector:
+    app: helloworld
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001  # NodePort range is typically 30000-32767
+# Apply the Deployment and Service configurations:
 
-1. Clone the repository
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
 
-```bash
-git clone https://github.com/your-repo/hello-world-app.git
-cd hello-world-app
+# Verify the Pods:
+kubectl get pods
+
+# Verify the Service:
+kubectl get services
+
+# Accessing the Application
+# Access the Application using Minikube:
+minikube service helloworld-service
+
+# This will open a browser or provide a URL to access the application.
+
+# Alternatively, you can access the application by visiting:
+http://<minikube-ip>:30001
+
+# Scaling the Application
+To scale the deployment (e.g., to 5 replicas):
+
+# Scale the deployment:
+kubectl scale deployment helloworld-deployment --replicas=5
+
+# Verify the scaling:
+kubectl get pods
+
+# Health Checks - Liveness and Readiness Probes
+# Add Health Check Endpoint in the .NET application (in Startup.cs):
+app.MapGet("/health", () => "Healthy");
+
+# Modify the deployment.yaml to include probes:
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helloworld-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: helloworld
+  template:
+    metadata:
+      labels:
+        app: helloworld
+    spec:
+      containers:
+      - name: helloworld
+        image: helloworldapp:1.0
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          
+# Reapply the deployment configuration:
+kubectl apply -f deployment.yaml
+
+# Bonus: Cleanup Resources
+To clean up all resources from your Minikube cluster:
+
+# Delete the service:
+kubectl delete service helloworld-service
+
+# Delete the deployment:
+kubectl delete deployment helloworld-deployment
+
+# Stop Minikube (optional):
+minikube stop
+
+# Conclusion
+This project demonstrates a simple example of Dockerizing a .NET Core web application and deploying it to a Kubernetes cluster using Minikube. We also covered scaling and health checks through liveness and readiness probes to ensure the application's robustness.
