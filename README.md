@@ -2,42 +2,37 @@
 This project demonstrates how to build, Dockerize, and deploy a simple .NET Core web application to a Kubernetes cluster using Minikube. The application is exposed using a Kubernetes Service and supports scaling and health checks through liveness and readiness probes.
 
 # Table of Contents
-Prerequisites
-Project Setup
-Dockerize the Application
-Setup Kubernetes with Minikube
-Deploy to Kubernetes
-Accessing the Application
-Scaling the Application
-Health Checks - Liveness and Readiness Probes
-Bonus: Cleanup Resources
-Prerequisites
+1. Prerequisites
+2. Project Setup
+3. Dockerize the Application
+4. Setup Kubernetes with Minikube
+5. Deploy to Kubernetes
+6. Accessing the Application
+7. Scaling the Application
+8. Health Checks - Liveness and Readiness Probes
+9. Bonus: Cleanup Resources
+    
+# Prerequisites
 # Before getting started, make sure you have the following installed:
 
-.NET Core SDK
-Docker
-Minikube
-kubectl
-(Optional) Git for version control
-Project Setup
-Create a new .NET Core Web App:
+1. .NET Core SDK
+2. Docker
+3. Minikube
+4. kubectl
+5. (Optional) Git for version control
 
-bash
-Copy code
+# Project Setup
+
+# Create a new .NET Core Web App:
 dotnet new web -o HelloWorldApp
 cd HelloWorldApp
-Run the application locally (optional):
 
-bash
-Copy code
+# Run the application locally (optional):
 dotnet run
 The application should now be available at http://localhost:5000.
 
-Dockerize the Application
-Create a Dockerfile in the root of your project:
-
-dockerfile
-Copy code
+# Dockerize the Application
+# Create a Dockerfile in the root of your project:
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -59,17 +54,15 @@ Setup Kubernetes with Minikube
 Start Minikube:
 
 minikube start
-Use Minikube's Docker environment:
 
-
+# Use Minikube's Docker environment:
 eval $(minikube docker-env)
-Build the Docker image inside Minikube:
 
-
+# Build the Docker image inside Minikube:
 docker build -t helloworldapp:1.0 .
+
 # Deploy to Kubernetes
 # Create a Kubernetes Deployment file deployment.yaml:
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -89,8 +82,8 @@ spec:
         image: helloworldapp:1.0
         ports:
         - containerPort: 80
+        
 # Create a Kubernetes Service file service.yaml:
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -128,19 +121,16 @@ http://<minikube-ip>:30001
 To scale the deployment (e.g., to 5 replicas):
 
 # Scale the deployment:
-
 kubectl scale deployment helloworld-deployment --replicas=5
-Verify the scaling:
 
-
+# Verify the scaling:
 kubectl get pods
-Health Checks - Liveness and Readiness Probes
-Add Health Check Endpoint in the .NET application (in Startup.cs):
 
+# Health Checks - Liveness and Readiness Probes
+# Add Health Check Endpoint in the .NET application (in Startup.cs):
 app.MapGet("/health", () => "Healthy");
-Modify the deployment.yaml to include probes:
 
-
+# Modify the deployment.yaml to include probes:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
