@@ -63,44 +63,44 @@ docker build -t helloworldapp:1.0 .
 
 # Deploy to Kubernetes
 # Create a Kubernetes Deployment file deployment.yaml:
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-deployment
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: helloworld
-  template:
-    metadata:
-      labels:
-        app: helloworld
-    spec:
-      containers:
-      - name: helloworld
-        image: helloworldapp:1.0
-        ports:
-        - containerPort: 80
+apiVersion: apps/v1<br>
+kind: Deployment<br>
+metadata:<br>
+  name: helloworld-deployment<br>
+spec:<br>
+  replicas: 2<br>
+  selector:<br>
+    matchLabels:<br>
+      app: helloworld<br>
+  template:<br>
+    metadata:<br>
+      labels:<br>
+        app: helloworld<br>
+    spec:<br>
+      containers:<br>
+      - name: helloworld<br>
+        image: helloworldapp:1.0<br>
+        ports:<br>
+        - containerPort: 80<br>
         
 # Create a Kubernetes Service file service.yaml:
-apiVersion: v1
-kind: Service
-metadata:
-  name: helloworld-service
-spec:
-  type: NodePort
-  selector:
-    app: helloworld
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-      nodePort: 30001  # NodePort range is typically 30000-32767
+apiVersion: v1<br>
+kind: Service<br>
+metadata:<br>
+  name: helloworld-service<br>
+spec:<br>
+  type: NodePort<br>
+  selector:<br>
+    app: helloworld<br>
+  ports:<br>
+    - protocol: TCP<br>
+      port: 80<br>
+      targetPort: 80<br>
+      nodePort: 30001  # NodePort range is typically 30000-32767<br>
 # Apply the Deployment and Service configurations:
 
-kubectl apply -f deployment.yaml
-kubectl apply -f service.yaml
+kubectl apply -f deployment.yaml<br>
+kubectl apply -f service.yaml<br>
 
 # Verify the Pods:
 kubectl get pods
@@ -131,37 +131,37 @@ kubectl get pods
 app.MapGet("/health", () => "Healthy");
 
 # Modify the deployment.yaml to include probes:
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: helloworld-deployment
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: helloworld
-  template:
-    metadata:
-      labels:
-        app: helloworld
-    spec:
-      containers:
-      - name: helloworld
-        image: helloworldapp:1.0
-        ports:
-        - containerPort: 80
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /health
-            port: 80
-          initialDelaySeconds: 5
-          periodSeconds: 10
+apiVersion: apps/v1<br>
+kind: Deployment<br>
+metadata:<br>
+  name: helloworld-deployment<br>
+spec:<br>
+  replicas: 2<br>
+  selector:<br>
+    matchLabels:<br>
+      app: helloworld<br>
+  template:<br>
+    metadata:<br>
+      labels:<br>
+        app: helloworld<br>
+    spec:<br>
+      containers:<br>
+      - name: helloworld<br>
+        image: helloworldapp:1.0<br>
+        ports:<br>
+        - containerPort: 80<br>
+        livenessProbe:<br>
+          httpGet:<br>
+            path: /health<br>
+            port: 80<br>
+          initialDelaySeconds: 5<br>
+          periodSeconds: 10<br>
+        readinessProbe:<br>
+          httpGet:<br>
+            path: /health<br>
+            port: 80<br>
+          initialDelaySeconds: 5<br>
+          periodSeconds: 10<br>
           
 # Reapply the deployment configuration:
 kubectl apply -f deployment.yaml
