@@ -33,26 +33,26 @@ The application should now be available at http://localhost:5000.
 
 # Dockerize the Application
 # Create a Dockerfile in the root of your project:
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-WORKDIR /app
-EXPOSE 80
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base<br>
+WORKDIR /app<br>
+EXPOSE 80<br>
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build<br>
 WORKDIR /src<br>
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
+COPY . .<br>
+RUN dotnet restore<br>
+RUN dotnet publish -c Release -o /app<br>
 
-FROM base AS final
-WORKDIR /app
-COPY --from=build /app .
-ENTRYPOINT ["dotnet", "HelloWorldApp.dll"]
+FROM base AS final<br>
+WORKDIR /app<br>
+COPY --from=build /app .<br>
+ENTRYPOINT ["dotnet", "HelloWorldApp.dll"]<br>
 
 # Build the Docker Image:
-docker build -t helloworldapp:1.0 .
-Setup Kubernetes with Minikube
-Start Minikube:
+docker build -t helloworldapp:1.0 .<br>
+Setup Kubernetes with Minikube<br>
 
+# Start Minikube:
 minikube start
 
 # Use Minikube's Docker environment:
