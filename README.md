@@ -115,7 +115,7 @@ minikube service helloworld-service
 # This will open a browser or provide a URL to access the application.
 
 # Alternatively, you can access the application by visiting:
-http://<minikube-ip>:30001
+http://"<minikube-ip>":30001
 
 # Scaling the Application
 To scale the deployment (e.g., to 5 replicas):
