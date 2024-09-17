@@ -86,6 +86,7 @@ spec:<br>
 
 ```   
 # Create a Kubernetes Service file service.yaml:
+```
 apiVersion: v1<br>
 kind: Service<br>
 metadata:<br>
@@ -99,11 +100,13 @@ spec:<br>
       port: 80<br>
       targetPort: 80<br>
       nodePort: 30001  # NodePort range is typically 30000-32767<br>
-# Apply the Deployment and Service configurations:
 
+```
+# Apply the Deployment and Service configurations:
+```
 kubectl apply -f deployment.yaml<br>
 kubectl apply -f service.yaml<br>
-
+```
 # Verify the Pods:
 kubectl get pods
 
