@@ -24,9 +24,10 @@ This project demonstrates how to build, Dockerize, and deploy a simple .NET Core
 # Project Setup
 
 # Create a new .NET Core Web App:
+```
 dotnet new web -o HelloWorldApp
 cd HelloWorldApp
-
+```
 # Run the application locally (optional):
 dotnet run
 The application should now be available at http://localhost:5000.
