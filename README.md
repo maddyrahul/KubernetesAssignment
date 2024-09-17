@@ -63,6 +63,7 @@ docker build -t helloworldapp:1.0 .
 
 # Deploy to Kubernetes
 # Create a Kubernetes Deployment file deployment.yaml:
+```
 apiVersion: apps/v1<br>
 kind: Deployment<br>
 metadata:<br>
@@ -82,7 +83,8 @@ spec:<br>
         image: helloworldapp:1.0<br>
         ports:<br>
         - containerPort: 80<br>
-        
+
+```   
 # Create a Kubernetes Service file service.yaml:
 apiVersion: v1<br>
 kind: Service<br>
@@ -131,6 +133,7 @@ kubectl get pods
 app.MapGet("/health", () => "Healthy");
 
 # Modify the deployment.yaml to include probes:
+```
 apiVersion: apps/v1<br>
 kind: Deployment<br>
 metadata:<br>
@@ -162,7 +165,9 @@ spec:<br>
             port: 80<br>
           initialDelaySeconds: 5<br>
           periodSeconds: 10<br>
-          
+
+```
+
 # Reapply the deployment configuration:
 kubectl apply -f deployment.yaml
 
